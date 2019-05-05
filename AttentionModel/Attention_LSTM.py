@@ -49,16 +49,20 @@ class SelfAttention(nn.Module):
 
 
 class Attention_LSTM(nn.Module):
-    def __init__(self, config, embedding_weights, bidirectional=False):
+    def __init__(self, vocab, config, embedding_weights, bidirectional=True):
         super(Attention_LSTM, self).__init__()
         self.config = config
-        # vocab_size = embedding_weights.shape[0]
-        # self.embeddings = nn.Embedding(vocab_size, EMBEDDING_DIM)
-        # self.embeddings.weight.data.copy_(torch.from_numpy(embedding_weights))
 
-        self.embeddings = nn.Embedding.from_pretrained(torch.FloatTensor(embedding_weights))
-        # self.embeddings.weight.requires_grad = False
-        # print(self.embeddings.weight.shape)  # [22667, 300]
+        embedding_dim = embedding_weights.shape[1]
+        embed_init = torch.zeros((vocab.corpus_vocab_size, embedding_dim), dtype=torch.float32)
+        self.corpus_embeddings = nn.Embedding(num_embeddings=vocab.corpus_vocab_size, embedding_dim=embedding_dim)
+        self.corpus_embeddings.weight.data.copy_(embed_init)
+        self.corpus_embeddings.weight.requires_grad = True
+        # self.corpus_embeddings.weight = nn.Parameter(embed_init)
+
+        self.wd2vec_embeddings = nn.Embedding.from_pretrained(torch.FloatTensor(embedding_weights))
+        self.wd2vec_embeddings.weight.requires_grad = False
+        # print(self.wd2vec_embeddings.weight.shape)  # [22667, 300]
 
         self.bidirectional = bidirectional
         self.nb_directions = 2 if bidirectional else 1
@@ -76,7 +80,7 @@ class Attention_LSTM(nn.Module):
         self.dropout_embed = nn.Dropout(self.config.drop_embed_rate)
         self.dropout = nn.Dropout(self.config.drop_rate)
         # self.out = nn.Linear(self.nb_directions * self.config.hidden_size, self.config.nb_class)
-        self.out = nn.Linear(self.config.hidden_size, self.config.nb_class)
+        self.out = nn.Linear(self.config.hidden_size, vocab.tag_size)
 
     def init_hidden(self, batch_size=64):
         torch.manual_seed(3347)
@@ -84,23 +88,24 @@ class Attention_LSTM(nn.Module):
         c_0 = torch.randn((self.config.nb_layers * self.nb_directions, batch_size, self.config.hidden_size))
         return h_0, c_0
 
-    def forward(self, inputs, seq_lens):  # (h0_state, c0_state)
+    def forward(self, inputs, wd2vec_inputs, seq_lens):  # (h0_state, c0_state)
         batch_size = inputs.shape[0]
 
         init_hidden = self.init_hidden(batch_size)
-
         # print(inputs.shape)  # [64, 100]
-        embed = self.embeddings(inputs)
-        # print(embed.shape)  # [64, 100, 300]
+
+        corpus_embed = self.corpus_embeddings(inputs)
+        wd2vec_embed = self.wd2vec_embeddings(wd2vec_inputs)
+        # print(wd2vec.shape)  # [64, 100, 300]
+        embed = corpus_embed + wd2vec_embed
 
         if self.training:  # 训练过程中采用Dropout，预测时False
             embed = self.dropout_embed(embed)
 
         # 使用pack_padded_sequence来确保LSTM模型不会处理用于填充的元素
         packed_embed = nn_utils.rnn.pack_padded_sequence(embed, seq_lens, batch_first=True)
-        # r_out, (hn_state, cn_state) = self.lstm(embed, state)  # 保存着lstm最后一层的输出特征 / 保存着最后一个时刻隐状态
-        r_out, (hn_state, cn_state) = self.lstm(packed_embed, init_hidden)  # None 表示0初始化
-        # print(r_out.shape, hn_state.shape, cn_state.shape)  # [64, 100, 128]  [1, 64, 128] [1, 64, 128]
+        # 保存着lstm最后一层的输出特征和最后一个时刻隐状态
+        r_out, hidden = self.lstm(packed_embed, init_hidden)  # None 表示0初始化
         r_out, _ = nn_utils.rnn.pad_packed_sequence(r_out, batch_first=True)
 
         if self.bidirectional:

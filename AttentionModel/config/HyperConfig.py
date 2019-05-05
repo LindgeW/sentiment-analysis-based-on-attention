@@ -26,6 +26,14 @@ class Config(object):
         return self._conf.get('Data', 'lexicon_path')
 
     @property
+    def embedding_path(self):
+        return self._conf.get('Data', 'embedding_path')
+
+    @property
+    def save_vocab_path(self):
+        return self._conf.get('Save', 'save_vocab_path')
+
+    @property
     def load_vocab_path(self):
         return self._conf.get('Save', 'load_vocab_path')
 

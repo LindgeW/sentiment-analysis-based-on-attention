@@ -5,10 +5,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam
 import matplotlib.pyplot as plt
-import AttentionModel.config.HyperConfig as Config
-import AttentionModel.Attention_LSTM as Model
-import AttentionModel.loss_function as LossFunc
-import AttentionModel.data as data
+import config.HyperConfig as Config
+import Attention_LSTM as Model
+import loss_function as LossFunc
+import data
 # from sklearn.model_selection import train_test_split
 # from torch.utils.data import DataLoader, TensorDataset
 
@@ -31,73 +31,54 @@ def draw(acc_lst, loss_lst):
 
 
 # 测试集评估模型
-def evaluate(test_data, trained_model, config):
+def evaluate(test_data, classifier, vocab, config):
 	# 将本层及子层的training设定为False
-	trained_model.eval()
+	classifier.eval()
 	total_acc = 0
 	total_loss = 0
 	loss_func = nn.CrossEntropyLoss()
-	with torch.no_grad():
-		for batch_data in data.get_batch(test_data, config.batch_size):
-			batch_data, seqs_len, _ = data.pad_batch(batch_data, config.max_len)
-			xb, yb, _ = data.batch_data_variable(batch_data)
+	# with torch.no_grad():
+	for batch_data in data.get_batch(test_data, config.batch_size):
+		# batch_data, seqs_len, _ = data.pad_batch(batch_data, config.max_len)
+		corpus_xb, wd2vec_xb, yb, _, seqs_len, _ = data.batch_data_variable(batch_data, vocab)
 
-			out, _ = trained_model(xb, seqs_len)
+		out, _ = classifier(corpus_xb, wd2vec_xb, seqs_len)
 
-			total_loss += loss_func(out, yb).item()
+		total_loss += loss_func(out, yb).item()
 
-			pred = torch.argmax(F.softmax(out, dim=1), dim=1)
-			# acc = (pred == yb).sum().item()
-			acc = torch.eq(pred, yb).sum().item()
-			total_acc += acc
+		pred = torch.argmax(F.softmax(out, dim=1), dim=1)
+		# acc = (pred == yb).sum().item()
+		acc = torch.eq(pred, yb).sum().item()
+		total_acc += acc
 
 	print('test loss:', total_loss)
 	print('test acc:', float(total_acc) / len(test_data))
 
 
 # 训练模型
-def train(config):
-	# 1 加载并处理数据
-	train_data = data.load_data_instance(config.train_data_path)
-	test_data = data.load_data_instance(config.test_data_path)
-	lexicon = data.load_lexicon(config.lexicon_path)
-
-	# 1.1 创建索引词典
-	embedding_weights, wd_to_idx = data.get_embedding_weights(config)
-
-	# 1.2 单词序列转索引序列
-	train_data = data.data_to_index(train_data, wd_to_idx, lexicon)
-	test_data = data.data_to_index(test_data, wd_to_idx)
-
-	# 1.5 构造batch数据
-	# train_data_loader = DataLoader(TensorDataset(torch.LongTensor(X_train_ids),
-	#                                              torch.LongTensor(y_train)),
-	#                                batch_size=config.batch_size,
-	#                                shuffle=False)
-
-	# 2 构造模型
-	att_lstm = Model.Attention_LSTM(config, embedding_weights, bidirectional=True)
+def train(train_data, test_data, vocab, config):
 	# loss_func = nn.NLLLoss()
 	loss_func = nn.CrossEntropyLoss()  # 标签必须为0~n-1，而且必须为1维的
 	att_loss = LossFunc.AttentionCrossEntropy()  # 监督注意力损失函数
+	embed_weights = vocab.get_embedding_weights(config.embedding_path)
+
+	att_lstm = Model.Attention_LSTM(vocab, config, embed_weights)
 
 	optimizer = Adam(att_lstm.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay)
+
 	# 3 训练模型
-	loss_lst = []
-	acc_lst = []
-
+	acc_lst, loss_lst = [], []
 	att_lstm.train()  # 将本层及子层的training设定为True
-
 	t1 = time.time()
 	for eps in range(config.epochs):
 		print(' --Epoch %d' % (1 + eps))
 		total_loss = 0
 		total_acc = 0
 		for batch_data in data.get_batch(train_data, config.batch_size):  # 批训练
-			batch_data, seqs_len, _ = data.pad_batch(batch_data, config.max_len)
-			xb, yb, att_ids = data.batch_data_variable(batch_data)
+			# batch_data, seqs_len, _ = data.pad_batch(batch_data, config.max_len)
+			corpus_xb, wd2vec_xb, yb, att_ids, seqs_len, _ = data.batch_data_variable(batch_data, vocab)
 			# 3.1 将数据输入模型
-			out, weights = att_lstm(xb, seqs_len)
+			out, weights = att_lstm(corpus_xb, wd2vec_xb, seqs_len)
 
 			# 3.2 重置模型梯度
 			att_lstm.zero_grad()
@@ -137,7 +118,7 @@ def train(config):
 	# torch.save(att_lstm.state_dict(), config.save_model_path)
 
 	# 评估模型
-	evaluate(test_data, att_lstm, config)
+	evaluate(test_data, att_lstm, vocab, config)
 
 
 if __name__ == '__main__':
@@ -148,4 +129,10 @@ if __name__ == '__main__':
 	torch.set_num_threads(4)  # 设定用于并行化CPU操作的OpenMP线程数
 
 	config = Config.Config('config/hyper_param.cfg')
-	train(config)
+
+	train_data = data.load_data_instance(config.train_data_path)
+	test_data = data.load_data_instance(config.test_data_path)
+
+	vocab = data.createVocab(corpus_path=config.train_data_path, lexicon_path=config.lexicon_path)
+	vocab.save(config.save_vocab_path)
+	train(train_data=train_data, test_data=test_data, vocab=vocab, config=config)

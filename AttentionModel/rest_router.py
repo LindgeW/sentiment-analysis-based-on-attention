@@ -3,10 +3,11 @@ sys.path.append(["../../", "../", "./"])
 from flask import Flask, request
 from flask_restful import reqparse, abort, Api, Resource, fields, marshal_with
 import socket
-from AttentionModel.predict import predict
-import AttentionModel.config.HyperConfig as Config
+from .predict import predict, load_vocab
+import config.HyperConfig as Config
 
 config = Config.Config('config/hyper_param.cfg')
+vocab = load_vocab(config.load_vocab_path)
 
 # 数据格式化
 resource_fields = {
@@ -64,7 +65,7 @@ class Toparse(Resource):
         req_lst = [s.strip() for s in req_lst if s.strip() != '']
         print(req_lst)
 
-        res_lst = predict(req_lst, config)
+        res_lst = predict(req_lst, vocab, config)
 
         result = ''.join(res_lst)
 

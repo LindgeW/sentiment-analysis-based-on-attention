@@ -68,6 +68,7 @@ gensim提供了PathLineSentences(input_dir)类，
 会去指定目录依次读取语料数据文件，采用iterator方式加载训练数据到内存
 '''
 def train_wd2vec(config):
+    logging.info('开始训练词向量....')
     t1 = time.time()
     word2vec_model = Word2Vec(PathLineSentences(config.corpus_path),
                               size=config.embedding_size,
@@ -89,6 +90,20 @@ def train_wd2vec(config):
         word2vec_model.train(sentences, total_examples=word2vec_model.corpus_count, epochs=word2vec_model.iter)        
     '''
 
+    t2 = time.time()
+    logging.info('词向量训练结束！总用时：{}min'.format((t2 - t1) / 60.0))
+
+    word2vec_model.save(config.model_save_path)  # 保存词向量模型
+    logging.info('词向量模型已保存......')
+
+
+# 重新训练词向量模型
+def retrain_wd2vec(sentences, config):
+    logging.info('重新训练词向量....')
+    t1 = time.time()
+    word2vec_model = Word2Vec.load(config.model_save_path)
+    word2vec_model.train(sentences, total_examples=100, epochs=5)
+    # 例：model.train([["hello", "world"], ["are", "you", "ok", "?"]], total_examples=2, epochs=1)
     t2 = time.time()
     logging.info('词向量训练结束！总用时：{}min'.format((t2 - t1) / 60.0))
 

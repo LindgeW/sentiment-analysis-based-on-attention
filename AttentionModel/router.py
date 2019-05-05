@@ -2,12 +2,13 @@ import sys
 sys.path.append(["../../", "../", "./"])
 from flask import Flask, request, jsonify
 import socket
-import AttentionModel.config.HyperConfig as Config
-from AttentionModel.predict import predict
-
-config = Config.Config('config/hyper_param.cfg')
+import config.HyperConfig as Config
+from predict import predict, load_vocab
 
 app = Flask(__name__)
+
+config = Config.Config('config/hyper_param.cfg')
+vocab = load_vocab(config.load_vocab_path)
 
 
 @app.route("/parse", methods=['GET', 'POST'])
@@ -48,7 +49,7 @@ def index():
         '#商家，质量有问题也没有人处理，这样的商家怎么不倒闭呢，不要去他家买东西了',
     ]
 
-    res = predict(X, config)
+    res = predict(X, vocab, config)
     print(res)
     return '<br><br>'.join(res)
 
