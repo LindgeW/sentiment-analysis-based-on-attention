@@ -165,7 +165,7 @@ def batch_data_variable(batch_data, vocab):
     tags = torch.index_select(tags, dim=0, index=indices)
     att_ids = torch.index_select(att_ids, dim=0, index=indices)
 
-    return corpus_idxs, wd2vec_idxs, tags, att_ids, sorted_seq_lens.numpy(), unsorted_indices
+    return corpus_idxs, wd2vec_idxs, tags, att_ids, sorted_seq_lens, unsorted_indices
 
 
 # -------------------------------------------------------------------

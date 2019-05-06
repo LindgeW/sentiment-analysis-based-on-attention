@@ -103,7 +103,7 @@ class Attention_LSTM(nn.Module):
             embed = self.dropout_embed(embed)
 
         # 使用pack_padded_sequence来确保LSTM模型不会处理用于填充的元素
-        packed_embed = nn_utils.rnn.pack_padded_sequence(embed, seq_lens, batch_first=True)
+        packed_embed = nn_utils.rnn.pack_padded_sequence(embed, seq_lens.numpy(), batch_first=True)
         # 保存着lstm最后一层的输出特征和最后一个时刻隐状态
         r_out, hidden = self.lstm(packed_embed, init_hidden)  # None 表示0初始化
         r_out, _ = nn_utils.rnn.pad_packed_sequence(r_out, batch_first=True)
