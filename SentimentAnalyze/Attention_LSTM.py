@@ -55,9 +55,10 @@ class Attention_LSTM(nn.Module):
 
         embedding_dim = embedding_weights.shape[1]
         embed_init = torch.zeros((vocab.corpus_vocab_size, embedding_dim), dtype=torch.float32)
-        self.corpus_embeddings = nn.Embedding(num_embeddings=vocab.corpus_vocab_size, embedding_dim=embedding_dim)
+        self.corpus_embeddings = nn.Embedding(num_embeddings=vocab.corpus_vocab_size,
+                                              embedding_dim=embedding_dim)
         self.corpus_embeddings.weight.data.copy_(embed_init)
-        self.corpus_embeddings.weight.requires_grad = True
+        self.corpus_embeddings.weight.requires_grad = True  # 默认
         # self.corpus_embeddings.weight = nn.Parameter(embed_init)
 
         self.wd2vec_embeddings = nn.Embedding.from_pretrained(torch.FloatTensor(embedding_weights))
@@ -68,7 +69,7 @@ class Attention_LSTM(nn.Module):
         self.nb_directions = 2 if bidirectional else 1
         self.lstm_dropout = self.config.drop_rate if self.config.nb_layers > 1 else 0
 
-        self.lstm = nn.LSTM(input_size=self.config.embedding_size,  # 输入的特征维度
+        self.lstm = nn.LSTM(input_size=embedding_dim,  # 输入的特征维度
                             hidden_size=self.config.hidden_size,  # 隐层状态的特征维度
                             num_layers=self.config.nb_layers,  # LSTM 堆叠的层数，默认值是1层，如果设置为2，第二个LSTM接收第一个LSTM的计算结果
                             dropout=self.lstm_dropout,  # 除了最后一层外，其它层的输出都会套上一个dropout层
@@ -82,8 +83,9 @@ class Attention_LSTM(nn.Module):
         # self.out = nn.Linear(self.nb_directions * self.config.hidden_size, self.config.nb_class)
         self.out = nn.Linear(self.config.hidden_size, vocab.tag_size)
 
-    def init_hidden(self, batch_size=64):
-        torch.manual_seed(3347)
+    def init_hidden(self, batch_size=64, retain=True):
+        if retain:
+            torch.manual_seed(3347)
         h_0 = torch.randn((self.config.nb_layers * self.nb_directions, batch_size, self.config.hidden_size))
         c_0 = torch.randn((self.config.nb_layers * self.nb_directions, batch_size, self.config.hidden_size))
         return h_0, c_0

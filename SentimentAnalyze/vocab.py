@@ -34,6 +34,34 @@ class Vocab(object):
 
             print('lexicon size:', len(self._lexicon))
 
+    # def get_embedding_weights(self, embed_path):
+    #     # 保存每个词的词向量
+    #     wd2vec_tab = {}
+    #     vector_size = 0
+    #     with open(embed_path, 'r', encoding='utf-8', errors='ignore') as fin:
+    #         for line in fin:
+    #             tokens = line.split()
+    #             vector_size = len(tokens) - 1
+    #             wd2vec_tab[tokens[0]] = list(map(lambda x: float(x), tokens[1:]))
+    #
+    #     self._word2index = {wd: idx + 1 for idx, wd in enumerate(wd2vec_tab.keys())}  # 词索引字典 {词: 索引}，索引从1开始计数
+    #     self._word2index['<unk>'] = self.UNK
+    #     self._index2word = {idx: wd for wd, idx in self._word2index.items()}
+    #
+    #     vocab_size = len(self._word2index)  # 词典大小(索引数字的个数)
+    #     embedding_weights = np.zeros((vocab_size, vector_size), dtype='float32')  # vocab_size * EMBEDDING_SIZE的0矩阵
+    #     for idx, wd in self._index2word.items():  # 从索引为1的词语开始，用词向量填充矩阵
+    #         if idx != self.UNK:
+    #             embedding_weights[idx] = wd2vec_tab[wd]
+    #     # embedding_weights[self.UNK] += word_vector
+    #
+    #     # 对于OOV的词赋值为0 或 随机初始化 或 赋其他词向量的均值
+    #     # embedding_weights[self.UNK, :] = np.random.uniform(-0.25, 0.25, config.embedding_size)
+    #     # embedding_weights[self.UNK] = np.random.uniform(-0.25, 0.25, config.embedding_size)
+    #     # embedding_weights[self.UNK] = embedding_weights[self.UNK] / vocab_size
+    #     # embedding_weights = embedding_weights / np.std(embedding_weights)  # 归一化
+    #     return embedding_weights
+
     # 获得embedding权重向量和词索引表
     def get_embedding_weights(self, vocab_path):
         wd2vec_model = Word2Vec.load(vocab_path)
@@ -59,7 +87,6 @@ class Vocab(object):
             # embedding_weights[self.UNK, :] = np.random.uniform(-0.25, 0.25, config.embedding_size)
             # embedding_weights[self.UNK] = np.random.uniform(-0.25, 0.25, config.embedding_size)
             # embedding_weights[self.UNK] = embedding_weights[self.UNK] / vocab_size
-
             return embedding_weights
 
     # 保持Vocab对象

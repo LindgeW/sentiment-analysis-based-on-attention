@@ -39,9 +39,6 @@ def load_vocab(load_vocab_path):
 
 
 def predict(pred_data, vocab, config):
-    # classifier = Attention_LSTM_SA.Attention_LSTM_SA()
-    # classifier.load_state_dict(torch.load(config.load_model_path))  # 加载模型参数
-
     # 加载模型
     classifier = torch.load(config.load_model_path)
 

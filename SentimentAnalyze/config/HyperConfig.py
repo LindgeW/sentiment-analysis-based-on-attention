@@ -12,6 +12,15 @@ class Config(object):
                 print(k, ':', v)
 
         self._conf = conf
+        self._use_cuda = False
+
+    @property
+    def use_cuda(self):
+        return self._use_cuda
+
+    @use_cuda.setter
+    def use_cuda(self, use_cuda):
+        self._use_cuda = use_cuda
 
     @property
     def train_data_path(self):
@@ -72,10 +81,6 @@ class Config(object):
     @property
     def batch_size(self):
         return self._conf.getint('Network', 'batch_size')
-
-    @property
-    def embedding_size(self):
-        return self._conf.getint('Network', 'embedding_size')
 
     @property
     def drop_rate(self):

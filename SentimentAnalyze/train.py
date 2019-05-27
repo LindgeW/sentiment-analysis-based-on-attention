@@ -122,13 +122,24 @@ def train(train_data, test_data, vocab, config):
 
 
 if __name__ == '__main__':
-	np.random.seed(666)
+	np.random.seed(1314)
 	torch.manual_seed(3347)
-	print(torch.get_num_threads())
+	torch.cuda.manual_seed(3347)
+	# torch.backends.cudnn.deterministic = True  # 解决reproducible问题，但是可能会影响性能
+	# torch.backends.cudnn.benchmark = False
+	# torch.backends.cudnn.enabled = False  # cuDNN采用的是不确定性算法，会影响到reproducible
 
-	torch.set_num_threads(4)  # 设定用于并行化CPU操作的OpenMP线程数
+	print('GPU可用：', torch.cuda.is_available())
+	print('CuDNN可用：', torch.backends.cudnn.enabled)
+	print('GPUs：', torch.cuda.device_count())
+	# torch.set_num_threads(4)  # 设定用于并行化CPU操作的OpenMP线程数
 
 	config = Config.Config('config/hyper_param.cfg')
+
+	config.use_cuda = torch.cuda.is_available()
+
+	if config.use_cuda:
+		torch.cuda.set_device(0)
 
 	train_data = data.load_data_instance(config.train_data_path)
 	test_data = data.load_data_instance(config.test_data_path)
