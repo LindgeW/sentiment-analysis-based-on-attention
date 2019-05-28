@@ -1,38 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cc7571ac-f3bd-40f4-b703-d9e2d6d1f96c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/SentimentAnalyze.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/other.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/Attention_LSTM.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/config/HyperConfig.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/config/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/config/hyper_param.cfg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/data/lexicon.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/data/stop_words.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/data/test_data.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/data/train_data.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/data/user_dict.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/loss_function.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/lstm_cell.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/model/att_lstm_model.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/model/word2vec.model" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/predict.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/rest_router.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/router.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/text_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/train.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/vocab.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/wd2vec_corpus/test_data.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/wd2vec_corpus/train_data.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../AttentionModel/word2vec_gensim.py" beforeDir="false" />
-    </list>
+    <list default="true" id="cc7571ac-f3bd-40f4-b703-d9e2d6d1f96c" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -403,7 +372,7 @@
       <workItem from="1557408630567" duration="4086000" />
       <workItem from="1557572044026" duration="1828000" />
       <workItem from="1558962333913" duration="719000" />
-      <workItem from="1558963080810" duration="844000" />
+      <workItem from="1558963080810" duration="1074000" />
     </task>
     <servers />
   </component>
@@ -440,13 +409,12 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="67770000" />
+    <option name="totallyTimeSpent" value="68000000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1552" height="840" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22708894" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22708894" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -461,7 +429,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.47452694" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.082969435" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.55312955" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
