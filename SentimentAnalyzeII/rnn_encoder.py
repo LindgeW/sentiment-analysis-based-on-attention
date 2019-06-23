@@ -135,7 +135,7 @@ class RNNEncoder(nn.Module):
             inputs = inputs.transpose(0, 1)
             mask = mask.transpose(0, 1)
 
-        mask = mask.float().unsqueeze(-1).expand((-1, -1, self.hidden_size))
+        mask = mask.unsqueeze(-1).expand((-1, -1, self.hidden_size))
 
         batch_size = inputs.size(1)
         if init_hidden is None:

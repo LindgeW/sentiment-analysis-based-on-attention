@@ -13,6 +13,7 @@ class Config(object):
 
         self._conf = conf
         self._use_cuda = False
+        self._device = None
 
     @property
     def use_cuda(self):
@@ -21,6 +22,14 @@ class Config(object):
     @use_cuda.setter
     def use_cuda(self, use_cuda):
         self._use_cuda = use_cuda
+
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, device):
+        self._device = device
 
     @property
     def train_data_path(self):

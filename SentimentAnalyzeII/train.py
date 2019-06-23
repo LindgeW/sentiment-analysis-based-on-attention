@@ -1,6 +1,5 @@
 import time
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.optim import Adam
 import matplotlib.pyplot as plt
 import config.HyperConfig as Config
@@ -30,8 +29,8 @@ def draw(acc_lst, loss_lst):
 def evaluate(test_data, classifier, vocab, config):
 	# 将本层及子层的training设定为False
 	classifier.eval()
-	total_acc, total_loss = 0, 0
-	loss_func = nn.CrossEntropyLoss()
+
+	total_acc = 0
 	for batch_data in get_batch(test_data, config.batch_size):
 		corpus_xb, wd2vec_xb, yb, att_ids, mask = batch_data_variable(batch_data, vocab)
 
@@ -42,13 +41,10 @@ def evaluate(test_data, classifier, vocab, config):
 			mask = mask.cuda()
 
 		out, _ = classifier(corpus_xb, wd2vec_xb, mask)
-		loss = loss_func(out, yb)
-		total_loss += loss.data.cpu().item()
-		pred = torch.argmax(F.softmax(out, dim=1), dim=1)
+		pred = torch.argmax(out, dim=1)
 		acc = torch.eq(pred, yb).cpu().sum().item()
 		total_acc += acc
 
-	print('test loss:', total_loss)
 	print('test acc:', float(total_acc) / len(test_data))
 
 
@@ -56,22 +52,31 @@ def evaluate(test_data, classifier, vocab, config):
 def train(train_data, dev_data, test_data, vocab, config):
 	loss_func = nn.CrossEntropyLoss()  # 标签必须为0~n-1，而且必须为1维的
 	att_loss = LossFunc.AttentionCrossEntropy()  # 监督注意力损失函数
+
 	embed_weights = vocab.get_embedding_weights(config.embedding_path)
+	vocab.save(config.save_vocab_path)
 
 	classifier = SentimentModel(vocab, config, embed_weights)
-	optimizer = Adam(filter(lambda p: p.requires_grad, classifier.parameters()), lr=config.learning_rate, weight_decay=config.weight_decay)
+	optimizer = Adam(filter(lambda p: p.requires_grad, classifier.parameters()),
+					 lr=config.learning_rate,
+					 weight_decay=config.weight_decay)
 
 	if config.use_cuda:
 		classifier = classifier.cuda()
 
+	# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+	# # 用.to(device)来决定模型使用GPU还是CPU
+	# classifier = classifier.to(device)
+
 	# 3 训练模型
 	train_acc_lst, train_loss_lst = [], []
 	dev_acc_lst, dev_loss_lst = [], []
-	t1 = time.time()
+
 	for eps in range(config.epochs):
 		classifier.train()  # 将本层及子层的training设定为True
 		print(' --Epoch %d' % (1 + eps))
 		train_loss, train_acc = 0, 0
+		t1 = time.time()
 		for batch_data in get_batch(train_data, config.batch_size):  # 批训练
 			corpus_xb, wd2vec_xb, yb, att_ids, mask = batch_data_variable(batch_data, vocab)
 
@@ -82,6 +87,12 @@ def train(train_data, dev_data, test_data, vocab, config):
 				att_ids = att_ids.cuda()
 				mask = mask.cuda()
 
+			# corpus_xb = corpus_xb.to(device)
+			# wd2vec_xb = wd2vec_xb.to(device)
+			# yb = yb.to(device)
+			# att_ids = att_ids.to(device)
+			# mask = mask.to(device)
+
 			# 3.1 重置模型梯度
 			classifier.zero_grad()
 			# optimizer.zero_grad()
@@ -90,13 +101,16 @@ def train(train_data, dev_data, test_data, vocab, config):
 			out, weights = classifier(corpus_xb, wd2vec_xb, mask)
 
 			# 3.3 计算误差损失
-			loss_cls = loss_func(out, yb)  # 分类误差
+			# loss_cls = loss_func(out, yb)  # 分类误差
+			# loss_att = att_loss(weights, att_ids)  # 注意力误差
+			# loss = loss_cls + config.theta * loss_att  # 分类误差+注意力监督误差
+			loss = loss_func(out, yb)  # 分类误差
 			loss_att = att_loss(weights, att_ids)  # 注意力误差
-			loss = loss_cls + config.theta * loss_att  # 分类误差+注意力监督误差
+			loss.add_(config.theta * loss_att)  # 分类误差+注意力监督误差
 			train_loss += loss.data.cpu().item()
 
 			# 计算准确率
-			pred = torch.argmax(F.softmax(out, dim=1), dim=1)
+			pred = torch.argmax(out, dim=1)
 			acc = torch.eq(pred, yb).cpu().sum().item()
 			train_acc += acc
 
@@ -106,7 +120,10 @@ def train(train_data, dev_data, test_data, vocab, config):
 			# 3.5 (用新的梯度值)更新模型参数
 			optimizer.step()
 
-		print('train_loss: %f  train_acc: %f' % (train_loss, float(train_acc) / len(train_data)))
+		t2 = time.time()
+		print('训练用时：%.3f min' % ((t2 - t1) / 60))
+		print('train_loss: %.3f  train_acc: %.3f' % (train_loss, float(train_acc) / len(train_data)))
+		# print('train_loss: {:.3f}  train_acc: {:.3f}'.format(train_loss, float(train_acc) / len(train_data)))
 		train_loss_lst.append(train_loss)
 		train_acc_lst.append(float(train_acc) / len(train_data))
 
@@ -123,15 +140,24 @@ def train(train_data, dev_data, test_data, vocab, config):
 					att_ids = att_ids.cuda()
 					mask = mask.cuda()
 
+				# corpus_xb = corpus_xb.to(device)
+				# wd2vec_xb = wd2vec_xb.to(device)
+				# yb = yb.to(device)
+				# att_ids = att_ids.to(device)
+				# mask = mask.to(device)
+
 				out, weights = classifier(corpus_xb, wd2vec_xb, mask)
 				# 3.3 计算误差损失
-				loss_cls = loss_func(out, yb)  # 分类误差
+				# loss_cls = loss_func(out, yb)  # 分类误差
+				# loss_att = att_loss(weights, att_ids)  # 注意力误差
+				# loss = loss_cls + config.theta * loss_att  # 分类误差+注意力监督误差
+				loss = loss_func(out, yb)  # 分类误差
 				loss_att = att_loss(weights, att_ids)  # 注意力误差
-				loss = loss_cls + config.theta * loss_att  # 分类误差+注意力监督误差
+				loss.add_(config.theta * loss_att)  # 分类误差+注意力监督误差
 				dev_loss += loss.data.cpu().item()
 
 				# 计算准确率
-				pred = torch.argmax(F.softmax(out, dim=1), dim=1)
+				pred = torch.argmax(out, dim=1)
 				acc = torch.eq(pred, yb).cpu().sum().item()
 				dev_acc += acc
 
@@ -139,12 +165,9 @@ def train(train_data, dev_data, test_data, vocab, config):
 			dev_loss_lst.append(dev_loss)
 			dev_acc_lst.append(float(dev_acc) / len(dev_data))
 
-	t2 = time.time()
-	print('训练总用时：%.2f min' % ((t2-t1) / 60))
-
 	# 绘制acc和loss曲线图
-	draw(train_acc_lst, train_loss_lst)
-	draw(dev_acc_lst, dev_loss_lst)
+	# draw(train_acc_lst, train_loss_lst)
+	# draw(dev_acc_lst, dev_loss_lst)
 
 	# 保存整个模型
 	torch.save(classifier, config.save_model_path)
@@ -174,10 +197,19 @@ if __name__ == '__main__':
 	if config.use_cuda:
 		torch.cuda.set_device(0)
 
+	# if torch.cuda.is_available():
+	# 	config.device = torch.device("cuda", 0)
+	# else:
+	# 	config.device = torch.device("cpu")
+	# config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 	train_data = load_data_instance(config.train_data_path)
 	dev_data = load_data_instance(config.dev_data_path)
 	test_data = load_data_instance(config.test_data_path)
+	print('train data size:', len(train_data))
+	print('dev data size:', len(dev_data))
+	print('test data size:', len(test_data))
+	vocab = create_vocab(corpus_path=config.train_data_path,
+						 lexicon_path=config.lexicon_path)
 
-	vocab = create_vocab(corpus_path=config.train_data_path, lexicon_path=config.lexicon_path)
-	vocab.save(config.save_vocab_path)
 	train(train_data=train_data, dev_data=dev_data, test_data=test_data, vocab=vocab, config=config)

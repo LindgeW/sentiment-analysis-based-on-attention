@@ -10,6 +10,6 @@ class AttentionCrossEntropy(nn.Module):
 		super(AttentionCrossEntropy, self).__init__()
 
 	def forward(self, input, target):  # target为one-hot形式的监督数据
-		cross_loss = torch.neg(torch.mul(target.float(), F.log_softmax(input, dim=1)))
-		loss = torch.mean(cross_loss)
+		cross_loss = torch.mul(target.float(), F.log_softmax(input, dim=1))
+		loss = torch.neg(torch.mean(cross_loss))
 		return loss

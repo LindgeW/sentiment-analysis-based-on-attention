@@ -32,7 +32,9 @@ def load_data_instance(file):
     with open(file, 'r', encoding='utf-8', errors='ignore') as fin:
         for example in fin:
             lbl, sent = example.split('|||')
-            insts.append(Instance(sent.strip().split(), int(lbl.strip())))
+            sent = sent.strip().split()
+            lbl = int(lbl.strip())
+            insts.append(Instance(sent, lbl))
     np.random.shuffle(insts)  # 初步随机化
     return insts
 
@@ -83,5 +85,5 @@ def batch_data_variable(batch_data, vocab):
         wd2vec_idxs[i, :seq_len] = torch.LongTensor(vocab.word2index(inst.words))
         tags[i] = vocab.tag2index(inst.tag)
         att_ids[i, :seq_len] = torch.LongTensor(vocab.lexicon_vec(inst.words))
-        mask[i, :seq_len].fill_(1)
+        mask[i, :seq_len].fill_(1.)
     return corpus_idxs, wd2vec_idxs, tags, att_ids, mask

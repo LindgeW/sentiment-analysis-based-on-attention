@@ -32,9 +32,9 @@ class SelfAttention(nn.Module):
     def __init__(self, hidden_size):
         super(SelfAttention, self).__init__()
         self.correlation = nn.Sequential(
-            nn.Linear(hidden_size, 64),
-            nn.ReLU(),       # nn.Tanh()
-            nn.Linear(64, 1)
+            nn.Linear(hidden_size, hidden_size//2),
+            nn.Tanh(),       # nn.ReLU()
+            nn.Linear(hidden_size//2, 1)
         )
 
     def forward(self, encoder_output):  # [batch_size, seq_len, hidden_size]
@@ -42,8 +42,10 @@ class SelfAttention(nn.Module):
         # print(a.shape)  # [batch_size, seq_len, 1]
         weights = F.softmax(a.squeeze(-1), dim=1)  # 去掉a中指定的维数为1的维度
         # print(weights.shape)  # [batch_size, seq_len]
+        # [batch_size, seq_len, hidden_size] * [batch_size, seq_len, 1] -> [batch_size, hidden_size]
         out = (encoder_output * weights.unsqueeze(-1)).sum(dim=1)
         # print(out.shape)  # [batch_size, hidden_size]
+        # batch, seq_len
         return out, weights
 
 
@@ -52,14 +54,15 @@ class SentimentModel(nn.Module):
         super(SentimentModel, self).__init__()
         self.config = config
 
-        embedding_dim = embedding_weights.shape[1]
+        embedding_dim = embedding_weights.shape[1]  # vocab_size * embedding_dim
         embed_init = torch.zeros((vocab.corpus_vocab_size, embedding_dim), dtype=torch.float32)
         self.corpus_embeddings = nn.Embedding(num_embeddings=vocab.corpus_vocab_size,
                                               embedding_dim=embedding_dim)
         self.corpus_embeddings.weight.data.copy_(embed_init)
+        # self.corpus_embeddings.weight = nn.Parameter(embed_init)
         self.corpus_embeddings.weight.requires_grad = True  # 默认
 
-        self.wd2vec_embeddings = nn.Embedding.from_pretrained(torch.FloatTensor(embedding_weights))
+        self.wd2vec_embeddings = nn.Embedding.from_pretrained(torch.from_numpy(embedding_weights))
         self.wd2vec_embeddings.weight.requires_grad = False
 
         self.bidirectional = True
