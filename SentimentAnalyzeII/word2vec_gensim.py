@@ -119,7 +119,7 @@ def retrain_wd2vec(sentences, config):
 
 
 if __name__ == '__main__':
-    config = word2vec_config(corpus_path='wd2vec_corpus/',
-                             model_save_path='data/word2vec_50.txt')
+    config = word2vec_config(corpus_path='wd2vec_corpus/char_tokens.txt',
+                             model_save_path='data/char2vec_50.txt')
 
     train_wd2vec(config)
