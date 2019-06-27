@@ -142,6 +142,8 @@ def batch_data_variable(batch_data, vocab):
     batch_size = len(batch_data)
     max_len = max([len(inst.words) for inst in batch_data])
 
+    # 先对长度进行排序会更简单点
+    # batch_data.sort(key=lambda inst: len(inst.words), reverse=True)
     seq_lens = []
     corpus_idxs = torch.zeros(batch_size, max_len, dtype=torch.long)
     wd2vec_idxs = torch.zeros(batch_size, max_len, dtype=torch.long)

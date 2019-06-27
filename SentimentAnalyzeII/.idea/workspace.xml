@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cc7571ac-f3bd-40f4-b703-d9e2d6d1f96c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/data/char_corpus.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsne/tsne.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsne/tsne_sklearn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/1.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/word2vec_100.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/word2vec_100.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/word2vec_50.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/word2vec_50.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SentimentAnalyze/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SentimentAnalyze/data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test1.py" beforeDir="false" afterPath="$PROJECT_DIR$/test1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/word2vec_gensim.py" beforeDir="false" afterPath="$PROJECT_DIR$/word2vec_gensim.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -58,7 +50,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tsne/tsne.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="145">
@@ -129,10 +121,10 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4392">
+            <state relative-caret-position="4644">
               <caret line="129" column="42" selection-start-line="129" selection-start-column="41" selection-end-line="129" selection-end-column="42" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
@@ -202,7 +194,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-274" />
     <option name="y" value="297" />
     <option name="width" value="1930" />
@@ -440,7 +432,7 @@
       <workItem from="1561336068037" duration="13899000" />
       <workItem from="1561421042446" duration="9099000" />
       <workItem from="1561510154416" duration="15409000" />
-      <workItem from="1561596096208" duration="6047000" />
+      <workItem from="1561596096208" duration="6370000" />
     </task>
     <servers />
   </component>
@@ -477,13 +469,12 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="194286000" />
+    <option name="totallyTimeSpent" value="194609000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-219" y="238" width="1544" height="787" extended-state="1" />
-    <editor active="true" />
+    <frame x="-7" y="-7" width="1488" height="878" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.44308943" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.07394366" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -498,11 +489,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.69793105" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.15457413" />
+      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.13517241" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="3" sideWeight="0.930131" visible="true" weight="0.09688347" />
+      <window_info anchor="right" id="SciView" order="3" sideWeight="0.930131" visible="true" weight="0.10070422" />
       <window_info anchor="right" x="0" y="0" width="338" height="640" id="Documentation" order="4" sideWeight="0.069869" side_tool="true" visible="true" weight="0.025606468" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -741,16 +732,6 @@
     <entry file="file://$PROJECT_DIR$/config/HyperConfig.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/test1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4392">
-          <caret line="129" column="42" selection-start-line="129" selection-start-column="41" selection-end-line="129" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data/word2vec_100.txt">
       <provider selected="true" editor-type-id="LargeFileEditor">
         <state relative-caret-position="36">
@@ -771,6 +752,16 @@
           <caret line="40" selection-start-line="40" selection-end-line="41" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4644">
+          <caret line="129" column="42" selection-start-line="129" selection-start-column="41" selection-end-line="129" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
